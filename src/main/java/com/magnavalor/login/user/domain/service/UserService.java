@@ -2,29 +2,32 @@ package com.magnavalor.login.user.domain.service;
 
 import com.magnavalor.login.user.domain.model.User;
 import com.magnavalor.login.user.domain.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.magnavalor.login.user.exceptions.UserNotFound;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 public class UserService {
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public Optional<User> byId(User user){
         return userRepository.findById(user.getId());
     }
-    @Autowired
+    final
     UserRepository userRepository;
 
     public User createUser(User user){
         return userRepository.save(user);
     }
 
-    public String deleteUser(Long Id){
-        Optional<User> returnedUser = userRepository.findById(Id);
-        returnedUser.ifPresentOrElse(user -> {
-            userRepository.delete(user);
+    public String deleteUser(User user){
+        byId(user).ifPresentOrElse(lambdaUser -> {
+            userRepository.delete(lambdaUser);
         },()->{
-            System.out.println("User not found");
+            throw new UserNotFound();
         });
         return "User is successfully deleted";
     }
@@ -35,7 +38,7 @@ public class UserService {
             lambdaUser.setPassword(user.getPassword());
             userRepository.save(lambdaUser);
         },()->{
-            System.out.println("User not found");
+            throw new UserNotFound();
         });
         return getUser(user);
     }
@@ -44,9 +47,13 @@ public class UserService {
         byId(user).ifPresentOrElse(
             Optional::of
         ,()->{
-            System.out.println("User not found");
+            throw new UserNotFound();
         });
         return byId(user);
+    }
+
+    public User getByEmailAndUserName(String userName, String email){
+        return userRepository.findByEmailAndUserName(userName, email);
     }
 
 
