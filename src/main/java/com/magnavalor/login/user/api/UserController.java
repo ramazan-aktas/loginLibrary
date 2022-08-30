@@ -20,7 +20,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user){
-        return new ResponseEntity<>(userService.createUser(userService.sanitizeUser(user)), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.createUser(userService.validateUser(user)), HttpStatus.CREATED);
     }
     @PatchMapping
     public ResponseEntity<Optional<User>> updateUser(@RequestBody User user){

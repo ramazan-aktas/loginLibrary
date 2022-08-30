@@ -60,7 +60,7 @@ public class UserService {
     public User getByEmailAndUserName(String userName, String email){
         return userRepository.findByEmailAndUserName(userName, email);
     }
-    public User sanitizeUser(User user) {
+    public User validateUser(User user) {
         if (!isValidEmail(user)){
             throw new EmailNotValid();
         } else if (userRepository.findByUserName(user.getUserName()) != null) {
